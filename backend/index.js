@@ -1,214 +1,141 @@
 require('dotenv').config();
+const express = require("express");
+const mongoose = require("mongoose");
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const cors = require("cors");
+const { createSecretToken } = require('./util/SecretToken')
+const bcrypt = require('bcrypt');
 
-const express =require("express");
-const mongoose =require("mongoose");
-const bodyParser =require('body-parser');
-const cors =require("cors");
-const {tempHoldingsModel, HoldingsModel} =require('./model/HoldingsModel');
+const { tempHoldingsModel, HoldingsModel } = require('./model/HoldingsModel');
 const { PositionsModel } = require('./model/PositionsModel');
-const {OrdersModel} =require('./model/OrdersModel')
-const PORT =process.env.PORT || 3002;
-const uri =process.env.MONGO_URL;
+const { OrdersModel } = require('./model/OrdersModel')
+const { UserModel } = require('./model/UserModel');
 
+const { body, validationResult } = require("express-validator");
 
-const app =express();
+const PORT = process.env.PORT || 3002;
+const uri = process.env.MONGO_URL;
+const app = express();
 
-app.use(cors());
+const corsOptions = {
+  origin: "http://localhost:3000",
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 app.use(bodyParser.json());
+app.use(cookieParser());
+app.use(express.json());
 
-// app.get('/addHoldings',async(req,res) =>{
-     // let tempHoldings= [
-     //      {
-     //        name: "BHARTIARTL",
-     //        qty: 2,
-     //        avg: 538.05,
-     //        price: 541.15,
-     //        net: "+0.58%",
-     //        day: "+2.99%",
-     //      },
-     //      {
-     //        name: "HDFCBANK",
-     //        qty: 2,
-     //        avg: 1383.4,
-     //        price: 1522.35,
-     //        net: "+10.04%",
-     //        day: "+0.11%",
-     //      },
-     //      {
-     //        name: "HINDUNILVR",
-     //        qty: 1,
-     //        avg: 2335.85,
-     //        price: 2417.4,
-     //        net: "+3.49%",
-     //        day: "+0.21%",
-     //      },
-     //      {
-     //        name: "INFY",
-     //        qty: 1,
-     //        avg: 1350.5,
-     //        price: 1555.45,
-     //        net: "+15.18%",
-     //        day: "-1.60%",
-     //        isLoss: true,
-     //      },
-     //      {
-     //        name: "ITC",
-     //        qty: 5,
-     //        avg: 202.0,
-     //        price: 207.9,
-     //        net: "+2.92%",
-     //        day: "+0.80%",
-     //      },
-     //      {
-     //        name: "KPITTECH",
-     //        qty: 5,
-     //        avg: 250.3,
-     //        price: 266.45,
-     //        net: "+6.45%",
-     //        day: "+3.54%",
-     //      },
-     //      {
-     //        name: "M&M",
-     //        qty: 2,
-     //        avg: 809.9,
-     //        price: 779.8,
-     //        net: "-3.72%",
-     //        day: "-0.01%",
-     //        isLoss: true,
-     //      },
-     //      {
-     //        name: "RELIANCE",
-     //        qty: 1,
-     //        avg: 2193.7,
-     //        price: 2112.4,
-     //        net: "-3.71%",
-     //        day: "+1.44%",
-     //      },
-     //      {
-     //        name: "SBIN",
-     //        qty: 4,
-     //        avg: 324.35,
-     //        price: 430.2,
-     //        net: "+32.63%",
-     //        day: "-0.34%",
-     //        isLoss: true,
-     //      },
-     //      {
-     //        name: "SGBMAY29",
-     //        qty: 2,
-     //        avg: 4727.0,
-     //        price: 4719.0,
-     //        net: "-0.17%",
-     //        day: "+0.15%",
-     //      },
-     //      {
-     //        name: "TATAPOWER",
-     //        qty: 5,
-     //        avg: 104.2,
-     //        price: 124.15,
-     //        net: "+19.15%",
-     //        day: "-0.24%",
-     //        isLoss: true,
-     //      },
-     //      {
-     //        name: "TCS",
-     //        qty: 1,
-     //        avg: 3041.7,
-     //        price: 3194.8,
-     //        net: "+5.03%",
-     //        day: "-0.25%",
-     //        isLoss: true,
-     //      },
-     //      {
-     //        name: "WIPRO",
-     //        qty: 4,
-     //        avg: 489.3,
-     //        price: 577.75,
-     //        net: "+18.08%",
-     //        day: "+0.32%",
-     //      },
-     //    ]; 
-     //    tempHoldings.forEach((item) =>{
-     //      let newHolding =new HoldingsModel({
-     //           name: item.name,
-     //           qty:item.qty,
-     //           avg:item.avg,
-     //           price:item.price,
-     //           net:item.day,
-     //           day:item.day,
-     //      });
-     //      newHolding.save();
+app.post('/register',
+  [
+    body("username").isLength({ min: 3 }).withMessage("name must be at least 3 character long"),
+    body("email").isEmail().withMessage("Invalid email"),
+    body("password").isLength({ min: 6 }).withMessage("password must be at least 6 character long"),
+  ],
 
-     //    });
-     //    res.send("done");
-// });
+  async (req, res) => {
+    const errors = validationResult(req);
 
-// app.get('/addPositions',async(req,res) =>{
-//      let tempPositions= [
-//           {
-//                product: "CNC",
-//                name: "EVEREADY",
-//                qty: 2,
-//                avg: 316.27,
-//                price: 312.35,
-//                net: "+0.58%",
-//                day: "-1.24%",
-//                isLoss: true,
-//              },
-//              {
-//                product: "CNC",
-//                name: "JUBLFOOD",
-//                qty: 1,
-//                avg: 3124.75,
-//                price: 3082.65,
-//                net: "+10.04%",
-//                day: "-1.35%",
-//                isLoss: true,
-//              },
-//         ]; 
-//         tempPositions.forEach((item) =>{
-//           let newPosition =new PositionsModel({
-//                product: item.product,
-//                name: item.name,
-//                qty: item.qty,
-//                avg: item.avg,
-//                price: item.price,
-//                net: item.net,
-//                day: item.day,
-//                isLoss: item.isLoss,
-//           });
-//           newPosition.save();
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
 
-//         });
-//         res.send("done");
-// });
+    try {
+      const { username, email, password } = req.body;
+      const hashedPassword = await bcrypt.hash(password, 10);
+      const existingUser = await UserModel.findOne({ email });
+      if (existingUser) {
+        return res.status(400).json({ error: 'email already registered' });
+      }
+      const newUser = new UserModel({ email, password: hashedPassword, username });
+      const token = createSecretToken(newUser._id);
+      res.cookie('token', token, {
+        ...corsOptions,
+        httpOnly: true,
+      });
+      await newUser.save();
+      res.status(201).json({ message: "user register successfully" });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ error: "server error1" });
 
-app.get('/allHoldings',async(req,res) =>{
-    let allHoldings =await HoldingsModel.find({});
-    res.json(allHoldings);
+    }
+
+  }
+);
+
+app.post("/login", [
+  body('email').isEmail().withMessage('invalid email'),
+  body('password').isLength({ min: 6 }).withMessage('password must be at least 6 length')
+
+],
+  async (req, res,) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    try {
+      const { email, password } = req.body;
+
+      const user = await UserModel.findOne({ email });
+      if (!user) {
+        return res.status(400).json({ error: "incorrect email or password" });
+
+      }
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (!isMatch) {
+        return res.status(400).json({ error: "incorect email or password" });
+      }
+      const token = createSecretToken(user._id);
+
+      res.cookie('token', token, {
+        ...corsOptions,
+        httpOnly: true,
+      });
+      res.status(200).json({ message: "user logged in successfully", success: true });
+    } catch (err) {
+      console.log(err);
+      res.status(500).json({ message: 'server error' });
+
+    }
+
+  }
+);
+
+app.get('/allHoldings', async (req, res) => {
+  let allHoldings = await HoldingsModel.find({});
+  res.json(allHoldings);
 });
 
-app.get('/allPositions',async(req,res) =>{
-     let allPositions =await PositionsModel.find({});
-     res.json(allPositions);
- });
+app.get('/allPositions', async (req, res) => {
+  let allPositions = await PositionsModel.find({});
+  res.json(allPositions);
+});
 
-app.post('/newOrder',async(req,res) =>{
-     let newOrder =new OrdersModel({
-          name:req.body.name,
-          qty:req.body.qty,
-          price:req.body.price,
-          mode:req.body.mode,
-     });
-     newOrder.save();
+app.post('/newOrder', async (req, res) => {
+  let newOrder = new OrdersModel({
+    name: req.body.name,
+    qty: req.body.qty,
+    price: req.body.price,
+    mode: req.body.mode,
+  });
+  newOrder.save();
 
-     res.send("order saved!");
+  res.send("order saved!");
 
 })
-app.listen(PORT, () =>{
-     console.log("App start");
-     mongoose.connect(uri);
-     console.log("db connected")
-});
 
+mongoose.connect(uri, { useNewUrlParser: true, useUnifiedTopology: true })
+  .then(() => console.log("DB connected"))
+  .catch((err) => console.error("DB connection error:", err));
+
+
+
+app.listen(PORT, () => {
+  console.log(`server is running on ${PORT}`);
+});
 

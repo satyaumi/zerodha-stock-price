@@ -1,18 +1,33 @@
-import React from 'react';
-
+import React from "react";
+import { Link } from "react-router-dom";
+import "./hero.css";   // ✅ make sure you have home.css for styling
 
 function Hero() {
-    return ( 
-        <div className='container p-5 mb-5'>
-            <div className='row text-center'>
-              <img src='media/homeHero.png' alt='Hero Image' className='mb-5'/>
-              <h1 className='mt-5'>Invest in everything</h1>
-              <p>online platform to invest in stocks,derivatives,mutual funds, and more </p>
-              <button className='p-2 btn btn-primary fs-5 mb-5' style={{width:"20%",margin:"0 auto"}}>Signup Now </button>
-            </div>
+  return (
+    <div className="home-wrapper">
+      <div className="hero-container">
+        <img
+          src="media/homeHero.png"
+          alt="Hero Banner"
+          className="hero-image"
+        />
 
+        <h1 className="hero-title">Invest in everything</h1>
+        <p className="hero-subtitle">
+          Online platform to invest in <strong>stocks, derivatives, mutual funds</strong>, and more.
+        </p>
+
+        <div className="hero-buttons">
+          <Link to="/login" className="hero-btn">
+            Login
+          </Link>
+          <Link to="/signup" className="hero-btn secondary">
+            Signup
+          </Link>
         </div>
-     );
+      </div>
+    </div>
+  );
 }
 
 export default Hero;

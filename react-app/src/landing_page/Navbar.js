@@ -26,6 +26,11 @@ function Navbar() {
                   signup
                 </Link>
               </li>
+               <li class="nav-item">
+                <Link class="nav-link active" aria-current="page" to="/login">
+                  login
+                </Link>
+              </li>
               <li class="nav-item">
                 <Link class="nav-link active" to="about">
                   About

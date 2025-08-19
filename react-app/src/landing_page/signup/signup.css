@@ -1,0 +1,92 @@
+.signup-wrapper {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(
+    90deg,
+    rgba(2, 0, 36, 1) 0%,
+    rgba(143, 187, 204, 1) 35%,
+    rgba(0, 212, 255, 1) 100%
+  );
+  font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+/* Form box */
+.form-container {
+  background: #fff;
+  padding: 2rem 3rem;
+  border-radius: 0.5rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 8px 8px 24px rgba(66, 68, 90, 0.6);
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Heading */
+.form-container h2 {
+  text-align: center;
+  color: rgba(0, 212, 255, 1);
+  margin-bottom: 1rem;
+}
+
+/* Form elements */
+.form-container form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.2rem;
+}
+
+.form-container label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #555;
+}
+
+.form-container input {
+  border: none;
+  border-bottom: 1px solid gray;
+  padding: 0.6rem;
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.form-container input:focus {
+  border-bottom: 1px solid rgba(0, 212, 255, 1);
+}
+
+/* Buttons and links */
+.form-container button,
+.form-container a {
+  display: inline-block;
+  text-align: center;
+  background-color: rgba(0, 212, 255, 1);
+  color: #fff;
+  border: none;
+  padding: 0.7rem;
+  font-size: 1rem;
+  cursor: pointer;
+  border-radius: 0.3rem;
+  transition: background 0.3s ease;
+  text-decoration: none;
+}
+
+.form-container button:hover,
+.form-container a:hover {
+  background-color: rgb(27, 73, 83);
+}
+
+.form-container span {
+  text-align: center;
+  font-size: 0.9rem;
+}
+
+.form-container span a {
+  color: rgba(0, 212, 255, 1);
+  text-decoration: none;
+  font-weight: bold;
+}
