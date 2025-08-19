@@ -54,7 +54,7 @@ function Login ()  {
         }
 
         setTimeout(() => {
-          navigate("/dashboard");
+          window.location.href = "http://localhost:3001/home";
         }, 1500);
       } else {
         handleError(message);
@@ -95,7 +95,7 @@ function Login ()  {
             onChange={handleOnchange}
           />
         </div>
-        <span><Link to={"http://localhost:3001/home"}>submit</Link></span>
+         <button type="submit">Submit</button>
         <span>
           Don’t have an account? <Link to={"/signup"}>Signup</Link>
         </span>
